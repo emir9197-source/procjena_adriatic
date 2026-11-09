@@ -509,7 +509,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.2.2 - poseban tab Lokacija i hazard */
+/* v24.5.2 - poseban tab Lokacija i hazard */
 .location-page{border-top:4px solid #1f6f9e}
 .location-page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}
 .location-head-badge{background:#123b5d;color:white;border-radius:10px;padding:10px 14px;font-weight:800;font-size:11px;letter-spacing:.06em}
@@ -543,7 +543,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.2 automatic environment + precise map markers */
+/* v24.5 automatic environment + precise map markers */
 .auto-env-card{margin-top:14px;background:linear-gradient(180deg,#f8fbfd,#fff)}
 .auto-env-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .auto-env-item{padding:11px;border:1px solid #d9e4eb;border-radius:9px;background:#fff}
@@ -558,7 +558,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.auto-env-grid{grid-template-columns:1fr}}
 
 
-/* ===== v24.2 refined flood hazard presentation ===== */
+/* ===== v24.5 refined flood hazard presentation ===== */
 .nearest-hazard-wrap{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;
 }
@@ -573,6 +573,10 @@ textarea{line-height:1.5}
 .nearest-hazard-card small{display:block;margin-top:4px;font-size:9px;color:#718291}
 .hazard-badge.info{background:#eef6fb;border-color:#c4dce9;color:#35627d}
 .hazard-badge.clear{background:#edf8ef;border-color:#b9dec0;color:#2b6b37}
+
+
+.auto-env-grid-compact{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+@media(max-width:700px){.auto-env-grid-compact{grid-template-columns:1fr!important}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1087,20 +1091,23 @@ textarea{line-height:1.5}
         <div>
           <span class="badge">AUTOMATSKA ANALIZA OKRUŽENJA</span>
           <h3>Automatski prepoznati elementi lokacije</h3>
-          <div class="small">Podaci se povlače iz javno dostupnih kartografskih izvora nakon pronalaženja koordinata objekta.</div>
+          <div class="small">Prikazuju se samo ključni podaci za elaborat: najbliža vatrogasna jedinica i najbliži evidentirani vodni tok.</div>
         </div>
         <span id="envStatusBadge" class="hazard-badge neutral">Nije analizirano</span>
       </div>
 
-      <div class="auto-env-grid">
-        <div class="auto-env-item"><span>Nadmorska visina</span><strong id="autoElevation">—</strong><small id="autoElevationSource">—</small></div>
-        <div class="auto-env-item"><span>Karakter terena</span><strong id="autoTerrain">—</strong><small id="autoSlope">—</small></div>
-        <div class="auto-env-item"><span>Najbliža vatrogasna jedinica</span><strong id="autoFireStation">—</strong><small id="autoFireDistance">—</small></div>
-        <div class="auto-env-item"><span>Najbliži vodotok</span><strong id="autoWaterway">—</strong><small id="autoWaterDistance">—</small></div>
-        <div class="auto-env-item"><span>Najbliža važnija cesta</span><strong id="autoRoad">—</strong><small id="autoRoadDistance">—</small></div>
-        <div class="auto-env-item"><span>Benzinska pumpa</span><strong id="autoFuel">—</strong><small id="autoFuelDistance">—</small></div>
-        <div class="auto-env-item"><span>Industrijski objekti / zone</span><strong id="autoIndustry">—</strong><small id="autoIndustryDistance">—</small></div>
-        <div class="auto-env-item"><span>Šumska površina</span><strong id="autoForest">—</strong><small id="autoForestDistance">—</small></div>
+      <div class="auto-env-grid auto-env-grid-compact">
+        <div class="auto-env-item">
+          <span>Najbliža vatrogasna jedinica</span>
+          <strong id="autoFireStation">—</strong>
+          <small id="autoFireDistance">—</small>
+        </div>
+        <div class="auto-env-item">
+          <span>Najbliži evidentirani vodni tok</span>
+          <strong id="autoWaterway">—</strong>
+          <small id="autoWaterDistance">—</small>
+          <div class="small" style="margin-top:5px">Udaljenost je zračna udaljenost do najbliže kartirane tačke toka.</div>
+        </div>
       </div>
 
       <div class="location-actions no-print">
@@ -1147,7 +1154,7 @@ textarea{line-height:1.5}
 
       <div class="hazard-card">
         <div class="hazard-card-head">
-          <div><span class="badge">POTRES</span><h3>Seizmički hazard</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda</div></div>
+          <div><span class="badge">POTRES</span><h3>Seizmički hazard</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda sa označenom lokacijom objekta</div></div>
           <span id="quakeBadge" class="hazard-badge neutral">Stručna klasifikacija</span>
         </div>
         <div class="seismic-map-wrap">
@@ -2759,7 +2766,7 @@ toggleModules();analyze();
       nwr(around:${radius},${lat},${lon})["landuse"="forest"];
       nwr(around:${radius},${lat},${lon})["natural"="wood"];
     );
-    out center tags;`;
+    out geom tags;`;
     const endpoints=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
     for(const ep of endpoints){
       try{
@@ -2771,9 +2778,35 @@ toggleModules();analyze();
     throw new Error('Kartografska analiza okruženja trenutno nije dostupna.');
   }
 
-  function coordsOf(el){
-    if(Number.isFinite(el.lat)&&Number.isFinite(el.lon)) return [el.lat,el.lon];
-    if(el.center&&Number.isFinite(el.center.lat)&&Number.isFinite(el.center.lon)) return [el.center.lat,el.center.lon];
+  function pointSegDistMeters(lat,lon,aLat,aLon,bLat,bLon){
+    const R=6371000,toRad=x=>x*Math.PI/180,lat0=toRad(lat);
+    const xy=(la,lo)=>[R*toRad(lo-lon)*Math.cos(lat0),R*toRad(la-lat)];
+    const [ax,ay]=xy(aLat,aLon),[bx,by]=xy(bLat,bLon);
+    const vx=bx-ax,vy=by-ay,wx=-ax,wy=-ay,vv=vx*vx+vy*vy;
+    let t=vv?((wx*vx+wy*vy)/vv):0;t=Math.max(0,Math.min(1,t));
+    const px=ax+t*vx,py=ay+t*vy;
+    return Math.hypot(px,py);
+  }
+  function geometryDistance(el,lat,lon){
+    const g=el.geometry;
+    if(Array.isArray(g)&&g.length){
+      let best=Infinity;
+      for(let i=0;i<g.length;i++){
+        const p=g[i];
+        if(Number.isFinite(p?.lat)&&Number.isFinite(p?.lon)){
+          best=Math.min(best,hav(lat,lon,p.lat,p.lon));
+        }
+        if(i<g.length-1){
+          const q=g[i+1];
+          if([p?.lat,p?.lon,q?.lat,q?.lon].every(Number.isFinite)){
+            best=Math.min(best,pointSegDistMeters(lat,lon,p.lat,p.lon,q.lat,q.lon));
+          }
+        }
+      }
+      if(Number.isFinite(best)) return best;
+    }
+    if(Number.isFinite(el.lat)&&Number.isFinite(el.lon)) return hav(lat,lon,el.lat,el.lon);
+    if(el.center&&Number.isFinite(el.center.lat)&&Number.isFinite(el.center.lon)) return hav(lat,lon,el.center.lat,el.center.lon);
     return null;
   }
   function nameOf(el,fallback){
@@ -2784,10 +2817,10 @@ toggleModules();analyze();
   function classifyElements(data,lat,lon){
     const cats={fire:[],water:[],road:[],fuel:[],industry:[],forest:[]};
     for(const el of data?.elements||[]){
-      const c=coordsOf(el); if(!c) continue;
-      const d=hav(lat,lon,c[0],c[1]),t=el.tags||{};
+      const d=geometryDistance(el,lat,lon); if(!Number.isFinite(d)) continue;
+      const t=el.tags||{};
       if(t.amenity==='fire_station') cats.fire.push({d,name:nameOf(el,'Vatrogasna jedinica')});
-      if(t.waterway || t.natural==='water') cats.water.push({d,name:nameOf(el,t.waterway?'Vodotok':'Vodena površina')});
+      if(t.waterway || t.natural==='water') cats.water.push({d,name:nameOf(el,t.waterway?'Vodni tok':'Vodena površina')});
       if(t.highway && /motorway|trunk|primary|secondary|tertiary/.test(t.highway)) cats.road.push({d,name:nameOf(el,'Važnija cesta')});
       if(t.amenity==='fuel') cats.fuel.push({d,name:nameOf(el,'Benzinska pumpa')});
       if(t.landuse==='industrial'||t.industrial) cats.industry.push({d,name:nameOf(el,'Industrijska zona / objekt')});
@@ -2803,39 +2836,14 @@ toggleModules();analyze();
     const badge=document.getElementById('envStatusBadge');
     if(badge){badge.textContent='Analiza u toku';badge.className='hazard-badge medium'}
     try{
-      try{
-        const e=await getElevation(lat,lon);
-        setText('autoElevation',`${Math.round(e.elevation)} m`);
-        setText('autoElevationSource',e.source);
-        if(!val('locElevation')) document.getElementById('locElevation').value=Math.round(e.elevation);
-      }catch(e){setText('autoElevation','Nije dostupno');setText('autoElevationSource','—')}
-
-      try{
-        const t=await getTerrain(lat,lon);
-        if(t){
-          setText('autoTerrain',t.terrain);
-          setText('autoSlope',`procijenjeni nagib do ${t.slopePct.toFixed(1)}% u radijusu ~150 m`);
-          const sel=document.getElementById('locTerrain');
-          if(sel && !sel.value){
-            const map={'Ravan teren':'Ravan teren','Blagi nagib':'Blagi nagib','Umjeren nagib':'Strmiji nagib','Strmiji teren':'Strmiji nagib'};
-            if([...sel.options].some(o=>o.value===map[t.terrain])) sel.value=map[t.terrain];
-          }
-        }
-      }catch(e){}
-
-      const data=await overpassNearby(lat,lon);
+const data=await overpassNearby(lat,lon);
       const c=classifyElements(data,lat,lon);
       const fill=(key,nameId,distId,noneText)=>{
         const x=c[key]?.[0];
         setText(nameId,x?x.name:noneText);
         setText(distId,x?fmtDist(x.d):'nije evidentirano u radijusu 3 km');
       };
-      fill('fire','autoFireStation','autoFireDistance','Nije pronađena');
       fill('water','autoWaterway','autoWaterDistance','Nije pronađen');
-      fill('road','autoRoad','autoRoadDistance','Nije pronađena');
-      fill('fuel','autoFuel','autoFuelDistance','Nije pronađena');
-      fill('industry','autoIndustry','autoIndustryDistance','Nije pronađeno');
-      fill('forest','autoForest','autoForestDistance','Nije pronađena');
 
       const fire=c.fire?.[0];
       if(fire && !val('locFireDistance')) document.getElementById('locFireDistance').value=(fire.d/1000).toFixed(1);
@@ -2848,21 +2856,17 @@ toggleModules();analyze();
 
   window.applyAutoEnvironmentToNarrative=function(){
     const bits=[];
-    const elev=document.getElementById('autoElevation')?.textContent;
-    const terrain=document.getElementById('autoTerrain')?.textContent;
-    const fs=document.getElementById('autoFireStation')?.textContent,fd=document.getElementById('autoFireDistance')?.textContent;
-    const water=document.getElementById('autoWaterway')?.textContent,wd=document.getElementById('autoWaterDistance')?.textContent;
-    const road=document.getElementById('autoRoad')?.textContent,rd=document.getElementById('autoRoadDistance')?.textContent;
-    const fuel=document.getElementById('autoFuel')?.textContent,fud=document.getElementById('autoFuelDistance')?.textContent;
-    const forest=document.getElementById('autoForest')?.textContent,ford=document.getElementById('autoForestDistance')?.textContent;
+    const fs=document.getElementById('autoFireStation')?.textContent;
+    const fd=document.getElementById('autoFireDistance')?.textContent;
+    const water=document.getElementById('autoWaterway')?.textContent;
+    const wd=document.getElementById('autoWaterDistance')?.textContent;
 
-    if(elev && elev!=='—'&&!elev.includes('Nije')) bits.push(`Lokacija se nalazi na nadmorskoj visini od približno ${elev}.`);
-    if(terrain && terrain!=='—') bits.push(`Prema digitalnom modelu reljefa, teren je klasificiran kao ${terrain.toLowerCase()}.`);
-    if(fs && !fs.includes('Nije')) bits.push(`Najbliža evidentirana vatrogasna jedinica je ${fs}, na približnoj udaljenosti ${fd}.`);
-    if(water && !water.includes('Nije')) bits.push(`Najbliži evidentirani vodotok ili vodena površina je ${water}, udaljen približno ${wd}.`);
-    if(road && !road.includes('Nije')) bits.push(`Najbliža važnija saobraćajnica je ${road}, na udaljenosti oko ${rd}.`);
-    if(fuel && !fuel.includes('Nije')) bits.push(`U širem okruženju evidentirana je benzinska pumpa ${fuel}, udaljena približno ${fud}.`);
-    if(forest && !forest.includes('Nije')) bits.push(`Najbliža evidentirana šumska površina nalazi se na približnoj udaljenosti ${ford}.`);
+    if(fs && fs!=='—' && !fs.includes('Nije') && !fs.includes('Google provjera')){
+      bits.push(`Najbliža evidentirana vatrogasna jedinica je ${fs}, na udaljenosti ${fd}.`);
+    }
+    if(water && water!=='—' && !water.includes('Nije')){
+      bits.push(`Najbliži evidentirani vodni tok je ${water}, udaljen približno ${wd} zračne linije.`);
+    }
 
     const ext=document.getElementById('locExternalText');
     if(ext){
@@ -2880,16 +2884,22 @@ toggleModules();analyze();
   // precise seismic map calibration using image geographic frame estimated from map panel:
   // The national map image includes margins; point is placed in calibrated map rectangle.
   function showPreciseQuakeMarker(lat,lon){
-    const m=document.getElementById('quakePointMarker'),lab=document.getElementById('quakeMarkerLabel');
-    if(!m) return;
-    // Calibrated plotting rectangle in the FHMZ image (approximate map frame, not full image canvas).
     const geo={minLon:15.70,maxLon:19.65,minLat:42.50,maxLat:45.35};
     const frame={left:5.5,right:95.0,top:6.5,bottom:94.0}; // percent of image canvas
     const xn=(lon-geo.minLon)/(geo.maxLon-geo.minLon);
     const yn=(geo.maxLat-lat)/(geo.maxLat-geo.minLat);
     const x=frame.left+Math.max(0,Math.min(1,xn))*(frame.right-frame.left);
     const y=frame.top+Math.max(0,Math.min(1,yn))*(frame.bottom-frame.top);
-    m.style.left=x+'%';m.style.top=y+'%';m.classList.remove('hidden');
+
+    ['quakePointMarker','reportQuakePoint'].forEach(id=>{
+      const m=document.getElementById(id);
+      if(!m) return;
+      m.style.left=x+'%';
+      m.style.top=y+'%';
+      m.classList.remove('hidden');
+    });
+
+    const lab=document.getElementById('quakeMarkerLabel');
     if(lab) lab.textContent=`Objekt ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
   }
 
@@ -2920,7 +2930,7 @@ toggleModules();analyze();
 
 
 <script>
-/* ===== v24.2 Google Maps Platform via Cloudflare Worker ===== */
+/* ===== v24.5 Google Maps Platform via Cloudflare Worker ===== */
 (function(){
   const V=id=>(document.getElementById(id)?.value||'').trim();
   const S=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
@@ -2990,16 +3000,7 @@ toggleModules();analyze();
         }else T('autoFireDistance',fmtDist(p.distanceMeters));
       }else{T('autoFireStation','Nije pronađena');T('autoFireDistance','—')}
     }catch(e){T('autoFireStation','Google provjera nije dostupna');T('autoFireDistance','—')}
-
-    // Google gas station.
-    try{
-      const g=await postJSON('/api/nearby',{lat,lon,type:'gas_station',radius:5000,maxResults:5});
-      const p=g.places?.[0];
-      if(p){T('autoFuel',p.name||'Benzinska pumpa');T('autoFuelDistance',fmtDist(p.distanceMeters))}
-      else{T('autoFuel','Nije pronađena');T('autoFuelDistance','—')}
-    }catch(e){T('autoFuel','Google provjera nije dostupna');T('autoFuelDistance','—')}
-
-    clearTimeout(safetyTimer);
+clearTimeout(safetyTimer);
     if(b){b.textContent='Google analiza završena';b.className='hazard-badge low'}
     STATUS('Google lokacija i ključni elementi okruženja su obrađeni. Dopunski kartografski podaci mogu se pojaviti naknadno.');
   };
