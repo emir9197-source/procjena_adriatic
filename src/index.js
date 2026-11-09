@@ -39,7 +39,11 @@ async function route(req,env){
 
 export default{async fetch(req,env){
   const u=new URL(req.url);
-  if(u.pathname==="/api/health")return J({ok:true,googleSecretConfigured:Boolean(env.GOOGLE_SERVER_API_KEY)});
+  if(u.pathname==="/api/health")return J({
+    ok:true,
+    googleSecretConfigured:Boolean(env.GOOGLE_SERVER_API_KEY),
+    endpoints:["/api/geocode","/api/nearby","/api/route"]
+  });
   if(u.pathname.startsWith("/api/")){
     if(!env.GOOGLE_SERVER_API_KEY)return J({error:"GOOGLE_SERVER_API_KEY secret nije podešen."},500);
     try{
