@@ -509,7 +509,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.6.2 - poseban tab Lokacija i hazard */
+/* v24.8 - poseban tab Lokacija i prirodne opasnosti */
 .location-page{border-top:4px solid #1f6f9e}
 .location-page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}
 .location-head-badge{background:#123b5d;color:white;border-radius:10px;padding:10px 14px;font-weight:800;font-size:11px;letter-spacing:.06em}
@@ -543,7 +543,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.6 automatic environment + precise map markers */
+/* v24.7 automatic environment + precise map markers */
 .auto-env-card{margin-top:14px;background:linear-gradient(180deg,#f8fbfd,#fff)}
 .auto-env-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .auto-env-item{padding:11px;border:1px solid #d9e4eb;border-radius:9px;background:#fff}
@@ -562,7 +562,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.auto-env-grid{grid-template-columns:1fr}}
 
 
-/* ===== v24.6 refined flood hazard presentation ===== */
+/* ===== v24.8 prikaz opasnosti od poplave ===== */
 .nearest-hazard-wrap{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;
 }
@@ -581,6 +581,13 @@ textarea{line-height:1.5}
 
 .auto-env-grid-compact{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 @media(max-width:700px){.auto-env-grid-compact{grid-template-columns:1fr!important}}
+
+
+/* v24.7 - guaranteed seismic object marker */
+.seismic-object-marker{position:absolute;z-index:30;transform:translate(-50%,-50%);pointer-events:none}
+.seismic-object-marker .dot{width:22px;height:22px;border-radius:50%;background:#ff1f1f;border:4px solid #fff;box-shadow:0 0 0 4px rgba(255,31,31,.55),0 0 0 10px rgba(255,31,31,.20),0 3px 12px rgba(0,0,0,.45)}
+.seismic-object-marker .lbl{position:absolute;left:50%;top:30px;transform:translateX(-50%);background:#15384f;color:#fff;padding:4px 7px;border-radius:5px;font-size:10px;font-weight:800;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.28)}
+.report-seismic-wrap .seismic-object-marker .lbl{font-size:8px;top:26px}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -659,7 +666,7 @@ textarea{line-height:1.5}
 <section>
 <div class="tabs no-print">
   <button class="tab active" onclick="switchTab('survey',this)">Upitnik</button>
-  <button class="tab" onclick="switchTab('location',this)">Lokacija i hazard</button>
+  <button class="tab" onclick="switchTab('location',this)">Lokacija i prirodne opasnosti</button>
   <button class="tab" onclick="switchTab('report',this)">Izvještaj</button>
   <button class="tab" onclick="switchTab('archive',this)">Arhiva procjena</button>
   <button class="tab" onclick="switchTab('settings',this)">Postavke baze</button>
@@ -892,7 +899,7 @@ textarea{line-height:1.5}
   <div id="liabilityPanel" class="panel app-section hidden">
     <span class="badge">INFORMATIVNI MODUL — NE UTIČE NA OCJENU</span>
     <h2>Odgovornost</h2>
-    <p class="hint">Podaci za pripremu osiguranja od izvanugovorne odgovornosti. Ovaj modul služi za prikupljanje underwriting podataka i ne utiče na ukupnu ocjenu kvaliteta imovinskog rizika.</p>
+    <p class="hint">Podaci za pripremu osiguranja od izvanugovorne odgovornosti. Ovaj modul služi za prikupljanje podataka potrebnih za stručnu procjenu osiguranja i ne utiče na ukupnu ocjenu kvaliteta imovinskog rizika.</p>
 
     <h3 style="margin-top:18px">Opći podaci relevantni za odgovornost</h3>
     <div class="grid">
@@ -1001,7 +1008,7 @@ textarea{line-height:1.5}
       <div>
         <span class="badge">POSEBAN SEGMENT ZA ELABORAT</span>
         <h2>Lokacija, okruženje i prirodne opasnosti</h2>
-        <p class="hint">Ovaj dio je potpuno odvojen od upitnika i ne utiče na ocjenu rizika. Služi za izradu makro/mikro opisa i grafičku dokumentaciju poplavnog i seizmičkog hazarda.</p>
+        <p class="hint">Ovaj dio je potpuno odvojen od upitnika i ne utiče na ocjenu rizika. Služi za izradu opisa šire i neposredne lokacije te grafički prikaz opasnosti od poplave i potresa.</p>
       </div>
       <div class="location-head-badge">ELABORAT</div>
     </div>
@@ -1022,10 +1029,10 @@ textarea{line-height:1.5}
 
         <div class="location-actions no-print">
           <button type="button" onclick="copyMainAddressToLocation()">Preuzmi adresu klijenta</button>
-          <button type="button" class="primary-action" onclick="generateLocationDraft()">Generiši lokaciju i hazard</button>
+          <button type="button" class="primary-action" onclick="generateLocationDraft()">Generiši lokaciju i prirodne opasnosti</button>
           <button type="button" onclick="openLocationMap()">Otvori na mapi</button>
         </div>
-        <div id="locationStatus" class="status">Unesite adresu ili preuzmite adresu iz osnovnih podataka, zatim kliknite „Generiši lokaciju i hazard“.</div>
+        <div id="locationStatus" class="status">Unesite adresu ili preuzmite adresu iz osnovnih podataka, zatim kliknite „Generiši lokaciju i prirodne opasnosti“.</div>
 
         <div class="location-facts">
           <div><span>Naselje / mjesto</span><strong id="locFactPlace">—</strong></div>
@@ -1096,8 +1103,8 @@ textarea{line-height:1.5}
 <div class="location-card narrative-card">
       <h3>3. Tekst za elaborat</h3>
       <div class="grid">
-        <div><label>Makro lokacija</label><textarea id="locMacroText" data-save class="location-text"></textarea></div>
-        <div><label>Mikro lokacija</label><textarea id="locMicroText" data-save class="location-text"></textarea></div>
+        <div><label>Šira lokacija</label><textarea id="locMacroText" data-save class="location-text"></textarea></div>
+        <div><label>Neposredna lokacija</label><textarea id="locMicroText" data-save class="location-text"></textarea></div>
       </div>
       <label>Vanjske opasnosti i pristupačnost</label>
       <textarea id="locExternalText" data-save class="location-text"></textarea>
@@ -1107,16 +1114,16 @@ textarea{line-height:1.5}
     <div class="hazard-grid">
       <div class="hazard-card">
         <div class="hazard-card-head">
-          <div><span class="badge">POPLAVA</span><h3>Poplavni hazard</h3><div class="small">Javni GIS prikaz — voda.ba</div></div>
+          <div><span class="badge">POPLAVA</span><h3>Opasnost od poplave</h3><div class="small">Javni GIS prikaz — voda.ba</div></div>
           <span id="floodBadge" class="hazard-badge neutral">Čeka provjeru GIS-a</span>
         </div>
         <div class="map-frame">
-          <img id="floodMapImage" alt="Karta poplavnog hazarda">
+          <img id="floodMapImage" alt="Karta opasnosti od poplave">
           <div id="floodExactMarker" class="exact-map-marker hidden"><span></span><label id="floodMarkerLabel"></label></div>
           <div id="floodMapPlaceholder" class="map-placeholder">Grafički prikaz će se pojaviti nakon generisanja lokacije.</div>
         </div>
         <div class="hazard-facts">
-          <div><span>Klasa hazarda</span><strong id="floodHazardClass">Čeka provjeru</strong></div>
+          <div><span>Klasa opasnosti</span><strong id="floodHazardClass">Čeka provjeru</strong></div>
           <div><span>Vjerovatnoća</span><strong id="floodProbability">Čeka provjeru</strong></div>
           <div><span>Povratni period</span><strong id="floodRecurrence">Čeka provjeru</strong></div>
           <div><span>Izvor</span><strong>ISV / voda.ba</strong></div>
@@ -1127,12 +1134,12 @@ textarea{line-height:1.5}
 
       <div class="hazard-card">
         <div class="hazard-card-head">
-          <div><span class="badge">POTRES</span><h3>Seizmički hazard</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda sa jasno označenom lokacijom objekta</div></div>
+          <div><span class="badge">POTRES</span><h3>Opasnost od potresa</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda sa jasno označenom lokacijom objekta</div></div>
           <span id="quakeBadge" class="hazard-badge neutral">Stručna klasifikacija</span>
         </div>
         <div class="seismic-map-wrap">
-          <img id="quakeBaseImage" src="https://www.fhmzbih.gov.ba/slike/seizmologija/seizmo13.jpg" alt="Karta seizmičkog hazarda">
-          <div id="quakePointMarker" class="exact-map-marker quake-marker hidden"><span></span><label id="quakeMarkerLabel"></label></div>
+          <img id="quakeBaseImage" src="https://www.fhmzbih.gov.ba/slike/seizmologija/seizmo13.jpg" alt="Karta opasnosti od potresa">
+          <div id="quakePointMarker" class="seismic-object-marker hidden"><div class="dot"></div><div id="quakeMarkerLabel" class="lbl">OBJEKT</div></div>
         </div>
         <div class="grid" style="margin-top:10px">
           <div>
@@ -1185,18 +1192,18 @@ textarea{line-height:1.5}
     </div>
     <div class="report-block" style="margin-top:10px">
       <b>Pouzdanost procjene:</b> <span id="reportPouzdanost">0%</span>
-      <span class="small"> • mjeri udio relevantnih podataka koji su poznati i upotrebljivi za scoring; “Nije poznato” ne obara ocjenu kvaliteta rizika.</span>
+      <span class="small"> • mjeri udio relevantnih podataka koji su poznati i upotrebljivi za izračun ocjene; “Nije poznato” ne obara ocjenu kvaliteta rizika.</span>
     </div>
 
     <div id="clientSummary" class="client-summary"></div>
 
     
     <div id="locationReportBlock" class="report-block hidden">
-      <h3 style="margin-top:0">Makro i mikro lokacija</h3>
+      <h3 style="margin-top:0">Šira i neposredna lokacija</h3>
       <div id="locationReportMacro"></div><div id="locationReportMicro" style="margin-top:10px"></div><div id="locationReportExternal" style="margin-top:10px"></div>
       <div class="report-hazard-grid" style="margin-top:16px">
-        <div class="report-hazard-card"><h4>Poplavni hazard</h4><img id="reportFloodMap" class="report-hazard-img"><div id="reportFloodText" class="elab-text"></div></div>
-        <div class="report-hazard-card"><h4>Seizmički hazard</h4><div class="report-seismic-wrap"><img src="https://www.fhmzbih.gov.ba/slike/seizmologija/seizmo13.jpg" class="report-hazard-img"><div id="reportQuakePoint" class="quake-point hidden"></div></div><div id="reportQuakeText" class="elab-text"></div></div>
+        <div class="report-hazard-card"><h4>Opasnost od poplave</h4><img id="reportFloodMap" class="report-hazard-img"><div id="reportFloodText" class="elab-text"></div></div>
+        <div class="report-hazard-card"><h4>Opasnost od potresa</h4><div class="report-seismic-wrap"><img src="https://www.fhmzbih.gov.ba/slike/seizmologija/seizmo13.jpg" class="report-hazard-img"><div id="reportQuakePoint" class="seismic-object-marker hidden"><div class="dot"></div><div class="lbl">OBJEKT</div></div></div><div id="reportQuakeText" class="elab-text"></div></div>
       </div>
     </div>
 
@@ -1273,7 +1280,7 @@ textarea{line-height:1.5}
           <th style="padding:8px;border-bottom:2px solid #ddd">Datum</th>
           <th style="padding:8px;border-bottom:2px solid #ddd">Klijent</th>
           <th style="padding:8px;border-bottom:2px solid #ddd">Djelatnost</th>
-          <th style="padding:8px;border-bottom:2px solid #ddd">Score</th>
+          <th style="padding:8px;border-bottom:2px solid #ddd">Ocjena</th>
           <th style="padding:8px;border-bottom:2px solid #ddd">Izloženost</th>
           <th style="padding:8px;border-bottom:2px solid #ddd">Akcija</th>
         </tr></thead>
@@ -1620,7 +1627,7 @@ function buildAssessment(){
  if(f('gen_claims')===0.25)
    addFinding(flags,recs,'major','Nepovoljna istorija značajnih šteta ili uzrok ranijih šteta nije otklonjen.','Zatražiti pregled prethodnih šteta i dokaz o provedenim korektivnim mjerama.');
  if(f('nat_history')===0.25)
-   addFinding(flags,recs,'major','Evidentirane su značajne ili ponovljene štete od prirodnih nepogoda.','Provjeriti lokacijski hazard i provedene mjere nakon prethodnih događaja.');
+   addFinding(flags,recs,'major','Evidentirane su značajne ili ponovljene štete od prirodnih nepogoda.','Provjeriti lokalnu izloženost prirodnim opasnostima i provedene mjere nakon prethodnih događaja.');
  if(f('fire_sprinkler')===0 && (f('fire_load')===0.25 || ['warehouse','production'].includes(activity)))
    addFinding(flags,recs,'major','Sprinkler zaštita ne postoji iako profil rizika opravdava dodatnu analizu potrebe za automatskim gašenjem.','Procijeniti tehničku i ekonomsku opravdanost sprinkler sistema.');
 
@@ -1633,7 +1640,7 @@ function buildAssessment(){
  if(f('gen_energy')===0.25)
    addFinding(flags,recs,'advisory','Solar/BESS/EV infrastruktura postoji, a zaštita ili izvedba su upitni.','Provjeriti projektnu dokumentaciju, zaštite, održavanje i način punjenja/skladištenja.');
  if(f('gen_external')===0.25)
-   addFinding(flags,recs,'advisory','Povećane vanjske opasnosti iz susjedstva.','Dokumentovati susjedne hazard-e i mogućnost širenja požara ili drugog događaja.');
+   addFinding(flags,recs,'advisory','Povećane vanjske opasnosti iz susjedstva.','Dokumentovati susjedne opasnosti i mogućnost širenja požara ili drugog događaja.');
 
  if(!flags.length && confidence>=70) flags.push(['ok','Nema automatski prepoznatih kritičnih ili važnih odstupanja.']);
  if(!recs.length && confidence>=70) recs.push('Nastaviti standardni postupak procjene uz provjeru dokumentacije i fotografija.');
@@ -1808,7 +1815,7 @@ function generateNarrative(a){
    const ne=Math.round(100-nq);
    if(ne<35) out+=`<p>Izloženost prirodnim nepogodama je, prema evidentiranim podacima, na relativno niskom nivou. Ipak, prirodni događaji se ne mogu u potpunosti eliminisati, pa konačan obim pokrića treba uskladiti sa lokacijom, vrijednošću imovine i prihvatljivim nivoom zadržavanja rizika.</p>`;
    else if(ne<60) out+=`<p>Prirodne nepogode predstavljaju umjerenu izloženost. Preporučuje se da se prilikom definisanja pokrića posebno razmotre lokalni hazard, ranije štete, odvodnja, položaj osjetljive imovine i eventualne preventivne mjere.</p>`;
-   else out+=`<p>Prirodne nepogode predstavljaju značajan dio ukupne izloženosti. Prije konačnog definisanja uslova osiguranja preporučuje se detaljnija provjera lokacijskog hazarda i mogućih mjera za smanjenje posljedica događaja.</p>`;
+   else out+=`<p>Prirodne nepogode predstavljaju značajan dio ukupne izloženosti. Prije konačnog definisanja uslova osiguranja preporučuje se detaljnija provjera lokalne izloženosti prirodnim opasnostima i mogućih mjera za smanjenje posljedica događaja.</p>`;
  }
 
  // Optional theft / BI.
@@ -2531,25 +2538,25 @@ toggleModules();analyze();
  window.refreshQuakeNarrative=()=>{
   const c=v('locQuakeClass'),i=v('locQuakeIntensity'),lab=({low:'niska',moderate:'umjerena',elevated:'povećana',high:'visoka'})[c]||'nije klasificirana';
   badge('quakeBadge',c?lab[0].toUpperCase()+lab.slice(1)+' izloženost':'Stručna klasifikacija',c==='low'?'low':c==='moderate'?'medium':(c==='elevated'||c==='high')?'high':'neutral');
-  let t='Lokacija je prikazana na službenoj prognostičkoj karti seizmičkog intenziteta Bosne i Hercegovine Federalnog hidrometeorološkog zavoda.';if(c)t+=` Seizmička izloženost je stručno ocijenjena kao ${lab}.`;if(i)t+=` Procijenjena zona / intenzitet: ${i}.`;t+=' Pri konačnom zaključku treba uzeti u obzir godinu izgradnje, konstrukcijski sistem, primijenjene seizmičke propise i eventualne rekonstrukcije objekta.';sv('locQuakeText',t);
+  let t='Lokacija objekta označena je na službenoj prognostičkoj karti seizmičkog intenziteta Bosne i Hercegovine Federalnog hidrometeorološkog zavoda.';if(c)t+=` Seizmička izloženost je stručno ocijenjena kao ${lab}.`;if(i)t+=` Procijenjena zona / intenzitet: ${i}.`;t+=' Pri konačnom zaključku treba uzeti u obzir godinu izgradnje, konstrukcijski sistem, primijenjene seizmičke propise i eventualne rekonstrukcije objekta.';sv('locQuakeText',t);
  };
 
  window.generateLocationDraft=async()=>{
-  const a=v('locAddress');if(!a){st('Unesite adresu.');return}st('Pronalaženje lokacije i provjera hazarda...');
+  const a=v('locAddress');if(!a){st('Unesite adresu.');return}st('Pronalaženje lokacije i provjera prirodnih opasnosti...');
   try{
    const p=await geocode(a),ad=p.address||{},sett=ad.city||ad.town||ad.village||ad.municipality||ad.suburb||'',mun=ad.municipality||ad.city_district||ad.city||'',reg=ad.state||ad.county||'',country=ad.country||'Bosna i Hercegovina';
    sv('locLat',p.lat);sv('locLon',p.lon);tx('locFactPlace',sett);tx('locFactMunicipality',mun);tx('locFactRegion',reg);tx('locFactCountry',country);tx('locFactSource','OpenStreetMap / Nominatim');tx('locFactCoords',`${Number(p.lat).toFixed(5)}, ${Number(p.lon).toFixed(5)}`);
    let macro=`Predmetna lokacija nalazi se ${sett?`na području ${sett}`:'na evidentiranoj adresi'}${reg?`, u administrativnom području ${reg}`:''}, ${country}. Šira lokacija se u okviru procjene posmatra kroz saobraćajnu dostupnost, karakter izgrađenog okruženja, prirodne karakteristike prostora i moguće vanjske izvore rizika.`;if(v('locElevation'))macro+=` Evidentirana nadmorska visina iznosi približno ${v('locElevation')} m.`;sv('locMacroText',macro);window.refreshLocationNarrative();
    const lat=Number(p.lat),lon=Number(p.lon);quakeMarker(lat,lon);window.refreshQuakeNarrative();
    const u=floodMap(lat,lon),img=document.getElementById('floodMapImage'),ph=document.getElementById('floodMapPlaceholder'),rim=document.getElementById('reportFloodMap');if(img){img.src=u;img.style.display='block';if(ph)ph.style.display='none'}if(rim)rim.src=u;
-   try{const d=await floodQuery(lat,lon),x=d?.features?.[0]?.attributes;if(x){const h=hz(x.HAZARD);tx('floodHazardClass',h);tx('floodProbability',pr(x.PROBATY));tx('floodRecurrence',x.RECURRENCE?x.RECURRENCE+' godina':'—');badge('floodBadge',h+' izloženost',h.includes('Visoka')?'high':h.includes('Srednja')?'medium':h.includes('Niska')?'low':'neutral');let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se u zoni klasificiranoj kao ${h.toLowerCase()} poplavni hazard`;if(x.PROBATY)ft+=`, uz ${pr(x.PROBATY).toLowerCase()}`;if(x.RECURRENCE)ft+=` i evidentirani povratni period od približno ${x.RECURRENCE} godina`;ft+=`. Podatak treba posmatrati zajedno sa terenskim stanjem, kotom objekta, odvodnjom i ranijim iskustvom plavljenja.`;sv('locFloodText',ft)}else{tx('floodHazardClass','Nije obuhvaćeno klasificiranim slojem');badge('floodBadge','Nema GIS klasifikacije','neutral');sv('locFloodText','Za predmetnu tačku javni GIS sloj nije vratio klasificiranu zonu poplavnog hazarda. To ne znači da poplavni rizik ne postoji; procjenu treba dopuniti terenskim i lokalnim podacima.')}}catch(e){badge('floodBadge','Provjera nije uspjela','neutral')}
-   st('Lokacija, tekst i grafički hazard prikazi su pripremljeni. Provjerite i doradite tekst prije elaborata.');
+   try{const d=await floodQuery(lat,lon),x=d?.features?.[0]?.attributes;if(x){const h=hz(x.HAZARD);tx('floodHazardClass',h);tx('floodProbability',pr(x.PROBATY));tx('floodRecurrence',x.RECURRENCE?x.RECURRENCE+' godina':'—');badge('floodBadge',h+' izloženost',h.includes('Visoka')?'high':h.includes('Srednja')?'medium':h.includes('Niska')?'low':'neutral');let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se u zoni u kojoj je opasnost od poplave klasificirana kao ${h.toLowerCase()}`;if(x.PROBATY)ft+=`, uz ${pr(x.PROBATY).toLowerCase()}`;if(x.RECURRENCE)ft+=` i evidentirani povratni period od približno ${x.RECURRENCE} godina`;ft+=`. Podatak treba posmatrati zajedno sa terenskim stanjem, kotom objekta, odvodnjom i ranijim iskustvom plavljenja.`;sv('locFloodText',ft)}else{tx('floodHazardClass','Nije obuhvaćeno klasificiranim slojem');badge('floodBadge','Nema GIS klasifikacije','neutral');sv('locFloodText','Za predmetnu tačku javni GIS sloj nije vratio klasificiranu zonu opasnosti od poplave. To ne znači da poplavni rizik ne postoji; procjenu treba dopuniti terenskim i lokalnim podacima.')}}catch(e){badge('floodBadge','Provjera nije uspjela','neutral')}
+   st('Lokacija, tekst i grafički prikazi prirodnih opasnosti su pripremljeni. Provjerite i doradite tekst prije elaborata.');
   }catch(e){st(e.message||'Automatsko pronalaženje nije uspjelo.')}
  };
  window.openLocationMap=()=>{const la=v('locLat'),lo=v('locLon'),a=v('locAddress');window.open(la&&lo?`https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=17/${la}/${lo}`:`https://www.openstreetmap.org/search?query=${encodeURIComponent(a)}`,'_blank','noopener')};
- window.copyLocationNarrative=async()=>{try{await navigator.clipboard.writeText(['MAKRO LOKACIJA\n'+v('locMacroText'),'MIKRO LOKACIJA\n'+v('locMicroText'),'VANJSKE OPASNOSTI\n'+v('locExternalText'),'POPLAVNI HAZARD\n'+v('locFloodText'),'SEIZMIČKI HAZARD\n'+v('locQuakeText')].join('\n\n'));st('Tekst je kopiran.')}catch(e){st('Kopiranje nije podržano.')}};
+ window.copyLocationNarrative=async()=>{try{await navigator.clipboard.writeText(['ŠIRA LOKACIJA\n'+v('locMacroText'),'NEPOSREDNA LOKACIJA\n'+v('locMicroText'),'VANJSKE OPASNOSTI\n'+v('locExternalText'),'OPASNOST OD POPLAVE\n'+v('locFloodText'),'OPASNOST OD POTRESA\n'+v('locQuakeText')].join('\n\n'));st('Tekst je kopiran.')}catch(e){st('Kopiranje nije podržano.')}};
 
- const rr=window.renderFullReport;if(typeof rr==='function')window.renderFullReport=function(){const z=rr.apply(this,arguments);const macro=v('locMacroText'),micro=v('locMicroText'),ext=v('locExternalText'),fl=v('locFloodText'),qu=v('locQuakeText'),b=document.getElementById('locationReportBlock');if(b)b.classList.toggle('hidden',!(macro||micro||ext||fl||qu));const h=(id,t,c)=>{const e=document.getElementById(id);if(e)e.innerHTML=c?`<p><b>${t}</b><br>${c}</p>`:''};h('locationReportMacro','Makro lokacija',macro);h('locationReportMicro','Mikro lokacija',micro);h('locationReportExternal','Vanjske opasnosti i pristupačnost',ext);h('reportFloodText','Procjena poplavnog hazarda',fl);h('reportQuakeText','Procjena seizmičkog hazarda',qu);return z};
+ const rr=window.renderFullReport;if(typeof rr==='function')window.renderFullReport=function(){const z=rr.apply(this,arguments);const macro=v('locMacroText'),micro=v('locMicroText'),ext=v('locExternalText'),fl=v('locFloodText'),qu=v('locQuakeText'),b=document.getElementById('locationReportBlock');if(b)b.classList.toggle('hidden',!(macro||micro||ext||fl||qu));const h=(id,t,c)=>{const e=document.getElementById(id);if(e)e.innerHTML=c?`<p><b>${t}</b><br>${c}</p>`:''};h('locationReportMacro','Šira lokacija',macro);h('locationReportMicro','Neposredna lokacija',micro);h('locationReportExternal','Vanjske opasnosti i pristupačnost',ext);h('reportFloodText','Procjena opasnosti od poplave',fl);h('reportQuakeText','Procjena opasnosti od potresa',qu);return z};
  window.addEventListener('load',()=>{const la=Number(v('locLat')),lo=Number(v('locLon'));if(la&&lo)quakeMarker(la,lo)});
 })();
 </script>
@@ -2566,7 +2573,7 @@ toggleModules();analyze();
 
  window.copyMainAddressToLocation=function(){
    const a=v('address');
-   if(a){sv('locAddress',a);st('Adresa klijenta je prenesena. Kliknite „Generiši lokaciju i hazard“.')}
+   if(a){sv('locAddress',a);st('Adresa klijenta je prenesena. Kliknite „Generiši lokaciju i prirodne opasnosti“.')}
    else st('U osnovnim podacima nije unesena adresa rizika.');
  };
 
@@ -2609,7 +2616,7 @@ toggleModules();analyze();
    const c=v('locQuakeClass'),i=v('locQuakeIntensity');
    const lab=({low:'niska',moderate:'umjerena',elevated:'povećana',high:'visoka'})[c]||'nije klasificirana';
    badge('quakeBadge',c?lab[0].toUpperCase()+lab.slice(1)+' izloženost':'Stručna klasifikacija',c==='low'?'low':c==='moderate'?'medium':(c==='elevated'||c==='high')?'high':'neutral');
-   let t='Lokacija je prikazana na prognostičkoj karti seizmičkog intenziteta Bosne i Hercegovine Federalnog hidrometeorološkog zavoda.';
+   let t='Lokacija objekta označena je na prognostičkoj karti seizmičkog intenziteta Bosne i Hercegovine Federalnog hidrometeorološkog zavoda.';
    if(c) t+=` Na osnovu očitanja karte i stručne procjene seizmička izloženost lokacije ocijenjena je kao ${lab}.`;
    if(i) t+=` Procijenjena zona / intenzitet: ${i}.`;
    t+=' Pri konačnom zaključku potrebno je uzeti u obzir konstrukcijski sistem, godinu izgradnje, primijenjene seizmičke propise i eventualne naknadne rekonstrukcije objekta.';
@@ -2619,7 +2626,7 @@ toggleModules();analyze();
  window.generateLocationDraft=async function(){
    const a=v('locAddress');
    if(!a){st('Unesite adresu lokacije.');return}
-   st('Pronalaženje lokacije i priprema hazard podataka...');
+   st('Pronalaženje lokacije i priprema podataka o prirodnim opasnostima...');
    try{
      const p=await geocode(a),ad=p.address||{};
      const sett=ad.city||ad.town||ad.village||ad.municipality||ad.suburb||'';
@@ -2646,7 +2653,7 @@ toggleModules();analyze();
          const h=hz(x.HAZARD);
          tx('floodHazardClass',h);tx('floodProbability',pr(x.PROBATY));tx('floodRecurrence',x.RECURRENCE?x.RECURRENCE+' godina':'—');
          badge('floodBadge',h+' izloženost',h.includes('Visoka')?'high':h.includes('Srednja')?'medium':h.includes('Niska')?'low':'neutral');
-         let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se u zoni klasificiranoj kao ${h.toLowerCase()} poplavni hazard`;
+         let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se u zoni u kojoj je opasnost od poplave klasificirana kao ${h.toLowerCase()}`;
          if(x.PROBATY)ft+=`, uz ${pr(x.PROBATY).toLowerCase()}`;
          if(x.RECURRENCE)ft+=` i evidentirani povratni period od približno ${x.RECURRENCE} godina`;
          ft+=`. Kartografski podatak treba posmatrati zajedno sa terenskim stanjem, kotom objekta, odvodnjom i eventualnim ranijim iskustvom plavljenja.`;
@@ -2654,13 +2661,13 @@ toggleModules();analyze();
        }else{
          tx('floodHazardClass','Nema klasificirane zone');tx('floodProbability','—');tx('floodRecurrence','—');
          badge('floodBadge','Nema GIS klasifikacije','neutral');
-         sv('locFloodText','Za predmetnu tačku javni GIS sloj nije vratio klasificiranu zonu poplavnog hazarda. To ne znači da poplavni rizik ne postoji; procjenu treba dopuniti terenskim stanjem i lokalnim podacima.');
+         sv('locFloodText','Za predmetnu tačku javni GIS sloj nije vratio klasificiranu zonu opasnosti od poplave. To ne znači da poplavni rizik ne postoji; procjenu treba dopuniti terenskim stanjem i lokalnim podacima.');
        }
      }catch(e){
        badge('floodBadge','Provjera nije uspjela','neutral');
-       sv('locFloodText','Automatska provjera javnog GIS sloja poplavnog hazarda trenutno nije uspjela. Procjenu je potrebno dopuniti ručnim i terenskim podacima.');
+       sv('locFloodText','Automatska provjera javnog GIS sloja opasnosti od poplave trenutno nije uspjela. Procjenu je potrebno dopuniti ručnim i terenskim podacima.');
      }
-     st('Lokacija i grafički hazard prikazi su pripremljeni. Provjerite i po potrebi doradite tekst.');
+     st('Lokacija i grafički prikazi prirodnih opasnosti su pripremljeni. Provjerite i po potrebi doradite tekst.');
    }catch(e){st(e.message||'Automatsko pronalaženje nije uspjelo.')}
  };
 
@@ -2670,7 +2677,7 @@ toggleModules();analyze();
    window.open(u,'_blank','noopener');
  };
  window.copyLocationNarrative=async function(){
-   const t=['MAKRO LOKACIJA\n'+v('locMacroText'),'MIKRO LOKACIJA\n'+v('locMicroText'),'VANJSKE OPASNOSTI\n'+v('locExternalText'),'POPLAVNI HAZARD\n'+v('locFloodText'),'SEIZMIČKI HAZARD\n'+v('locQuakeText')].join('\n\n');
+   const t=['ŠIRA LOKACIJA\n'+v('locMacroText'),'NEPOSREDNA LOKACIJA\n'+v('locMicroText'),'VANJSKE OPASNOSTI\n'+v('locExternalText'),'OPASNOST OD POPLAVE\n'+v('locFloodText'),'OPASNOST OD POTRESA\n'+v('locQuakeText')].join('\n\n');
    try{await navigator.clipboard.writeText(t);st('Tekst lokacije je kopiran.')}catch(e){st('Kopiranje nije podržano u ovom pregledniku.')}
  };
 
@@ -2906,7 +2913,7 @@ const data=await overpassNearby(lat,lon);
 
 
 <script>
-/* ===== v24.6 Google Maps Platform via Cloudflare Worker ===== */
+/* ===== v24.7 Google Maps Platform via Cloudflare Worker ===== */
 (function(){
   const V=id=>(document.getElementById(id)?.value||'').trim();
   const S=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
@@ -2945,7 +2952,7 @@ const data=await overpassNearby(lat,lon);
     const lat=Number(V('locLat')),lon=Number(V('locLon'));
     if(!lat||!lon){STATUS('Prvo generišite lokaciju.');return}
     const b=document.getElementById('envStatusBadge');
-    if(b){b.textContent='Google analiza u toku';b.className='hazard-badge medium'}
+    if(b){b.textContent='Analiza lokacije u toku';b.className='hazard-badge medium'}
     const safetyTimer=setTimeout(()=>{
       if(b && b.textContent.includes('u toku')){
         b.textContent='Djelimično završeno';
@@ -2975,9 +2982,9 @@ const data=await overpassNearby(lat,lon);
           if(!V('locFireDistance'))S('locFireDistance',(route.distanceMeters/1000).toFixed(1));
         }else T('autoFireDistance',fmtDist(p.distanceMeters));
       }else{T('autoFireStation','Nije pronađena');T('autoFireDistance','—')}
-    }catch(e){T('autoFireStation','Google provjera nije dostupna');T('autoFireDistance','—')}
+    }catch(e){T('autoFireStation','Automatska provjera nije dostupna');T('autoFireDistance','—')}
 clearTimeout(safetyTimer);
-    if(b){b.textContent='Google analiza završena';b.className='hazard-badge low'}
+    if(b){b.textContent='Analiza lokacije završena';b.className='hazard-badge low'}
     STATUS('Google lokacija i ključni elementi okruženja su obrađeni. Dopunski kartografski podaci mogu se pojaviti naknadno.');
   };
 
@@ -2990,6 +2997,7 @@ clearTimeout(safetyTimer);
       const g=await getJSON('/api/geocode',{address});
       const lat=Number(g.lat),lon=Number(g.lon);
       S('locLat',lat); S('locLon',lon);
+      if(window.updateSeismicObjectMarker) window.updateSeismicObjectMarker(lat,lon);
       if(g.formattedAddress) S('locAddress',g.formattedAddress);
 
       T('locFactPlace',g.locality||g.sublocality||'—');
@@ -3034,13 +3042,13 @@ clearTimeout(safetyTimer);
           T('floodRecurrence',a.RECURRENCE?a.RECURRENCE+' godina':'Nije navedeno');
           const bb=document.getElementById('floodBadge');
           if(bb){
-            bb.textContent=h+' poplavni hazard';
+            bb.textContent='Opasnost od poplave: '+h.toLowerCase();
             bb.className='hazard-badge '+(h.includes('Visoka')?'high':h.includes('Srednja')?'medium':h.includes('Niska')?'low':'info');
           }
           const nw=document.getElementById('floodNearestWrap');
           if(nw)nw.classList.add('hidden');
 
-          let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se unutar klasificirane zone ${h.toLowerCase()} poplavnog hazarda`;
+          let ft=`Prema javno dostupnom GIS sloju upravljanja rizikom od poplava, predmetna lokacija nalazi se unutar zone u kojoj je opasnost od poplave klasificirana kao ${h.toLowerCase()}`;
           if(a.PROBATY)ft+=`, uz ${pr(a.PROBATY).toLowerCase()}`;
           if(a.RECURRENCE)ft+=` i evidentirani povratni period od približno ${a.RECURRENCE} godina`;
           ft+=`. Ovaj kartografski nalaz predstavlja važnu podlogu za procjenu, ali ga je potrebno sagledati zajedno sa kotom objekta, stanjem odvodnje, položajem osjetljive imovine, blizinom vodotoka i podacima o eventualnim ranijim poplavnim događajima.`;
@@ -3052,7 +3060,7 @@ clearTimeout(safetyTimer);
 
           const bb=document.getElementById('floodBadge');
           if(bb){
-            bb.textContent='Izvan evidentirane hazard zone';
+            bb.textContent='Izvan evidentirane zone opasnosti';
             bb.className='hazard-badge clear';
           }
 
@@ -3086,25 +3094,25 @@ clearTimeout(safetyTimer);
           if(nearest){
             const nh=hz(nearest.attrs.HAZARD);
             if(nw)nw.classList.remove('hidden');
-            T('floodNearestZone',`${nh} hazard`);
+            T('floodNearestZone',`${nh} opasnost`);
             T('floodNearestDistance',`Najbliža evidentirana zona je unutar približno ${nearest.radius<1000?nearest.radius+' m':(nearest.radius/1000).toFixed(1)+' km'} od lokacije.`);
-            const meaning = nearest.radius<=500 ? 'Bliska hazard zona — pojačana pažnja'
-                          : nearest.radius<=2000 ? 'Hazard zona u široj blizini'
-                          : 'Hazard zona nije u neposrednoj blizini';
+            const meaning = nearest.radius<=500 ? 'Bliska zona opasnosti — potrebna pojačana pažnja'
+                          : nearest.radius<=2000 ? 'Zona opasnosti u široj blizini'
+                          : 'Zona opasnosti nije u neposrednoj blizini';
             T('floodNearestMeaning',meaning);
 
-            let ft=`Prema javno dostupnom GIS sloju klasificiranih područja poplavnog hazarda, predmetna lokacija nije evidentirana unutar klasificirane zone poplavnog hazarda. `;
-            ft+=`Najbliža evidentirana klasificirana zona nalazi se u radijusu do približno ${nearest.radius<1000?nearest.radius+' m':(nearest.radius/1000).toFixed(1)+' km'} i označena je kao ${nh.toLowerCase()} poplavni hazard. `;
+            let ft=`Prema javno dostupnom GIS sloju klasificiranih područja opasnosti od poplave, predmetna lokacija nije evidentirana unutar klasificirane zone opasnosti od poplave. `;
+            ft+=`Najbliža evidentirana klasificirana zona nalazi se u radijusu do približno ${nearest.radius<1000?nearest.radius+' m':(nearest.radius/1000).toFixed(1)+' km'}, a opasnost od poplave u toj zoni klasificirana je kao ${nh.toLowerCase()}. `;
             ft+=`Ovaj nalaz ne isključuje mogućnost lokalnog plavljenja usljed intenzivnih oborina, nedovoljnog kapaciteta odvodnje, podzemnih voda ili drugih lokalnih hidroloških uslova. Konačnu procjenu potrebno je dopuniti terenskim stanjem, kotom objekta, položajem osjetljive imovine, blizinom vodotoka i podacima o ranijim štetnim događajima.`;
             S('locFloodText',ft);
           } else {
             if(nw)nw.classList.remove('hidden');
             T('floodNearestZone','Nije evidentirana u radijusu do 10 km');
-            T('floodNearestDistance','Javni GIS sloj nije vratio klasificiranu hazard zonu u provjerenom radijusu.');
+            T('floodNearestDistance','Javni GIS sloj nije vratio klasificiranu zonu opasnosti u provjerenom radijusu.');
             T('floodNearestMeaning','Niska kartografska indikacija');
 
             S('locFloodText',
-              'Prema javno dostupnom GIS sloju klasificiranih područja poplavnog hazarda, predmetna lokacija nije evidentirana unutar klasificirane zone poplavnog hazarda, niti je u provjerenom radijusu do 10 km pronađena klasificirana hazard zona. Ovaj nalaz predstavlja povoljnu kartografsku indikaciju, ali ne predstavlja potvrdu potpunog odsustva poplavnog rizika. Lokalno plavljenje i dalje može nastati usljed intenzivnih oborina, nedovoljne odvodnje, podzemnih voda ili specifične konfiguracije terena, zbog čega zaključak treba potvrditi terenskim pregledom i podacima o prethodnim štetnim događajima.'
+              'Prema javno dostupnom GIS sloju klasificiranih područja opasnosti od poplave, predmetna lokacija nije evidentirana unutar klasificirane zone opasnosti od poplave, niti je u provjerenom radijusu do 10 km pronađena klasificirana zona opasnosti. Ovaj nalaz predstavlja povoljnu kartografsku indikaciju, ali ne predstavlja potvrdu potpunog odsustva poplavnog rizika. Lokalno plavljenje i dalje može nastati usljed intenzivnih oborina, nedovoljne odvodnje, podzemnih voda ili specifične konfiguracije terena, zbog čega zaključak treba potvrditi terenskim pregledom i podacima o prethodnim štetnim događajima.'
             );
           }
         }
@@ -3114,7 +3122,7 @@ clearTimeout(safetyTimer);
         T('floodRecurrence','—');
         const bb=document.getElementById('floodBadge');
         if(bb){bb.textContent='GIS provjera nije uspjela';bb.className='hazard-badge info'}
-        S('locFloodText','Automatska GIS provjera poplavnog hazarda trenutno nije dostupna. Procjenu je potrebno dopuniti terenskim podacima, blizinom vodotoka, stanjem odvodnje i informacijama o prethodnim poplavnim događajima.');
+        S('locFloodText','Automatska GIS provjera opasnosti od poplave trenutno nije dostupna. Procjenu je potrebno dopuniti terenskim podacima, blizinom vodotoka, stanjem odvodnje i informacijama o prethodnim poplavnim događajima.');
       }
 
       if(typeof window.refreshQuakeNarrative==='function')window.refreshQuakeNarrative();
@@ -3125,6 +3133,14 @@ clearTimeout(safetyTimer);
     }
   };
 })();
+</script>
+
+
+<script>
+window.addEventListener('load',()=>{
+  const lat=Number(document.getElementById('locLat')?.value),lon=Number(document.getElementById('locLon')?.value);
+  if(window.updateSeismicObjectMarker && lat && lon) window.updateSeismicObjectMarker(lat,lon);
+});
 </script>
 
 </body>
