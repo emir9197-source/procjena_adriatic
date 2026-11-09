@@ -509,7 +509,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24 - poseban tab Lokacija i hazard */
+/* v24.1 - poseban tab Lokacija i hazard */
 .location-page{border-top:4px solid #1f6f9e}
 .location-page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}
 .location-head-badge{background:#123b5d;color:white;border-radius:10px;padding:10px 14px;font-weight:800;font-size:11px;letter-spacing:.06em}
@@ -543,7 +543,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24 automatic environment + precise map markers */
+/* v24.1 automatic environment + precise map markers */
 .auto-env-card{margin-top:14px;background:linear-gradient(180deg,#f8fbfd,#fff)}
 .auto-env-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .auto-env-item{padding:11px;border:1px solid #d9e4eb;border-radius:9px;background:#fff}
@@ -2698,7 +2698,7 @@ toggleModules();analyze();
     ];
     for(const u of urls){
       try{
-        const r=await fetch(u);
+        const r=await fetchTimeout(u,{},8000);
         if(!r.ok) continue;
         const d=await r.json();
         const e=d?.results?.[0]?.elevation;
@@ -2903,12 +2903,16 @@ toggleModules();analyze();
 
 
 <script>
-/* ===== v24 Google Maps Platform via Cloudflare Worker ===== */
+/* ===== v24.1 Google Maps Platform via Cloudflare Worker ===== */
 (function(){
   const V=id=>(document.getElementById(id)?.value||'').trim();
   const S=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
   const T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v??'—'};
   const STATUS=v=>{const e=document.getElementById('locationStatus');if(e)e.textContent=v};
+  async function fetchTimeout(url,opts={},ms=8000){
+    const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
+    try{return await fetch(url,{...opts,signal:c.signal})}finally{clearTimeout(t)}
+  }
 
   async function getJSON(path,params={}){
     const u=new URL(path,location.origin);
@@ -2919,7 +2923,7 @@ toggleModules();analyze();
     return d;
   }
   async function postJSON(path,body){
-    const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const r=await fetchTimeout(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},8000);
     const d=await r.json().catch(()=>({}));
     if(!r.ok) throw new Error(d.error||('API greška '+r.status));
     return d;
@@ -2939,9 +2943,21 @@ toggleModules();analyze();
     if(!lat||!lon){STATUS('Prvo generišite lokaciju.');return}
     const b=document.getElementById('envStatusBadge');
     if(b){b.textContent='Google analiza u toku';b.className='hazard-badge medium'}
+    const safetyTimer=setTimeout(()=>{
+      if(b && b.textContent.includes('u toku')){
+        b.textContent='Djelimično završeno';
+        b.className='hazard-badge medium';
+        STATUS('Google lokacija je potvrđena. Jedan od dopunskih izvora nije odgovorio na vrijeme; osnovni podaci ostaju važeći.');
+      }
+    },12000);
 
-    // Keep previous terrain/elevation/OSM complement first.
-    try{ if(typeof oldEnv==='function') await oldEnv(); }catch(_){}
+    // Dopunska analiza (teren/OSM) radi u pozadini i NE SMIJE blokirati Google rezultate.
+    if(typeof oldEnv==='function'){
+      Promise.race([
+        Promise.resolve().then(()=>oldEnv()),
+        new Promise(resolve=>setTimeout(resolve,6000))
+      ]).catch(()=>{});
+    }
 
     // Google fire station + actual route.
     try{
@@ -2966,7 +2982,9 @@ toggleModules();analyze();
       else{T('autoFuel','Nije pronađena');T('autoFuelDistance','—')}
     }catch(e){T('autoFuel','Google provjera nije dostupna');T('autoFuelDistance','—')}
 
+    clearTimeout(safetyTimer);
     if(b){b.textContent='Google analiza završena';b.className='hazard-badge low'}
+    STATUS('Google lokacija i ključni elementi okruženja su obrađeni. Dopunski kartografski podaci mogu se pojaviti naknadno.');
   };
 
   // Replace address geocoding with Google via Worker.
