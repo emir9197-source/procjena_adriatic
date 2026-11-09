@@ -1,0 +1,41 @@
+ADRIATIC v24 — Cloudflare Worker + Google Maps Platform
+
+VAŽNO
+Server Google API key treba imati dopuštene:
+- Geocoding API
+- Routes API
+- Places API (New)
+
+Ako si ga već ograničio samo na Geocoding + Routes, dodaj Places API (New).
+
+DEPLOY
+1. Raspakuj ZIP.
+2. Otvori terminal / Command Prompt u tom folderu.
+3. Pokreni:
+   npm install
+   npx wrangler login
+   npx wrangler deploy
+
+4. Nakon deploya otvori Cloudflare:
+   Workers & Pages > adriaticprocjena > Settings > Variables and Secrets
+5. Add:
+   Type: Secret
+   Name: GOOGLE_SERVER_API_KEY
+   Value: tvoj SERVER Google API key
+6. Save / Deploy.
+
+TEST
+Otvori:
+https://adriaticprocjena.emir9197.workers.dev/api/health
+
+Treba vratiti:
+{"ok":true,"googleSecretConfigured":true}
+
+ŠTA RADI
+- Google Geocoding daje adresu i koordinate.
+- Google Places traži vatrogasnu jedinicu i benzinsku pumpu.
+- Google Routes daje stvarnu cestovnu udaljenost i vrijeme do vatrogasaca.
+- Poplava ostaje na voda.ba GIS-u.
+- Potres ostaje na FHMZ karti.
+- OSM ostaje dopunski za vodotok, šumu, industrijske zone i važnije ceste.
+- Google server ključ nije u HTML-u i nije vidljiv korisniku.
