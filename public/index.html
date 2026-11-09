@@ -509,7 +509,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.5.2 - poseban tab Lokacija i hazard */
+/* v24.6.2 - poseban tab Lokacija i hazard */
 .location-page{border-top:4px solid #1f6f9e}
 .location-page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}
 .location-head-badge{background:#123b5d;color:white;border-radius:10px;padding:10px 14px;font-weight:800;font-size:11px;letter-spacing:.06em}
@@ -543,7 +543,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.5 automatic environment + precise map markers */
+/* v24.6 automatic environment + precise map markers */
 .auto-env-card{margin-top:14px;background:linear-gradient(180deg,#f8fbfd,#fff)}
 .auto-env-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
 .auto-env-item{padding:11px;border:1px solid #d9e4eb;border-radius:9px;background:#fff}
@@ -553,12 +553,16 @@ textarea{line-height:1.5}
 .exact-map-marker{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none}
 .exact-map-marker span{display:block;width:18px;height:18px;border-radius:50%;background:#d92323;border:3px solid #fff;box-shadow:0 0 0 3px rgba(217,35,35,.45),0 3px 9px rgba(0,0,0,.35)}
 .exact-map-marker label{position:absolute;left:50%;top:23px;transform:translateX(-50%);white-space:nowrap;background:rgba(20,43,61,.92);color:#fff;padding:4px 7px;border-radius:5px;font-size:9px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.exact-map-marker.quake-marker span{width:22px;height:22px;background:#ff2d2d;box-shadow:0 0 0 4px rgba(255,45,45,.40),0 0 0 10px rgba(255,45,45,.18),0 3px 10px rgba(0,0,0,.35)}
+.exact-map-marker.quake-marker label{top:27px;font-size:10px}
+.report-seismic-wrap .quake-point{width:20px;height:20px;border:4px solid #fff;box-shadow:0 0 0 3px rgba(213,36,36,.55),0 0 0 9px rgba(213,36,36,.18)}
+
 .quake-marker{left:50%;top:50%}
 @media(max-width:1000px){.auto-env-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.auto-env-grid{grid-template-columns:1fr}}
 
 
-/* ===== v24.5 refined flood hazard presentation ===== */
+/* ===== v24.6 refined flood hazard presentation ===== */
 .nearest-hazard-wrap{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;
 }
@@ -1035,18 +1039,8 @@ textarea{line-height:1.5}
 
       <div class="location-card">
         <h3>2. Stručna zapažanja o mikro lokaciji</h3>
+        <p class="hint">Automatika povlači lokaciju, vodotok i vatrogasnu jedinicu. Ovdje ostaju samo terenska zapažanja procjenitelja koja nisu vidljiva iz kartografskih izvora.</p>
         <div class="grid">
-          <div>
-            <label>Karakter okruženja</label>
-            <select id="locSurrounding" data-save>
-              <option value="">Odaberi...</option>
-              <option>Pretežno poslovno / industrijsko</option>
-              <option>Pretežno stambeno</option>
-              <option>Mješovito stambeno-poslovno</option>
-              <option>Ruralno / rijetko izgrađeno</option>
-              <option>Šumsko / prirodno okruženje</option>
-            </select>
-          </div>
           <div>
             <label>Pristup interventnim vozilima</label>
             <select id="locAccess" data-save>
@@ -1057,30 +1051,9 @@ textarea{line-height:1.5}
               <option>Otežan pristup</option>
             </select>
           </div>
-          <div>
-            <label>Konfiguracija terena</label>
-            <select id="locTerrain" data-save>
-              <option value="">Odaberi...</option>
-              <option>Ravan teren</option>
-              <option>Blagi nagib</option>
-              <option>Strmiji nagib</option>
-              <option>Udolina / depresija</option>
-              <option>Plato / uzvišenje</option>
-            </select>
-          </div>
-          <div>
-            <label>Blizina vodotoka</label>
-            <select id="locWater" data-save>
-              <option value="">Odaberi...</option>
-              <option>Nema značajnog vodotoka u neposrednoj blizini</option>
-              <option>Vodotok u široj blizini</option>
-              <option>Vodotok u neposrednoj blizini</option>
-              <option>Lokacija neposredno uz vodotok</option>
-            </select>
-          </div>
         </div>
-        <div style="margin-top:10px"><label>Susjedni objekti / vanjske opasnosti</label><textarea id="locNeighbors" data-save placeholder="npr. benzinska pumpa, skladište, šuma, proizvodni objekt..."></textarea></div>
-        <div style="margin-top:10px"><label>Dodatna terenska zapažanja</label><textarea id="locFieldNotes" data-save placeholder="pristup, širina prilaza, ograđenost, nagib terena, okolni rizici..."></textarea></div>
+        <div style="margin-top:10px"><label>Susjedni objekti / vanjske opasnosti</label><textarea id="locNeighbors" data-save placeholder="npr. benzinska pumpa, skladište, proizvodni objekt, parking, gusto izgrađeno susjedstvo..."></textarea></div>
+        <div style="margin-top:10px"><label>Dodatna terenska zapažanja</label><textarea id="locFieldNotes" data-save placeholder="pristup, širina prilaza, ograđenost, mogućnost manevrisanja vatrogasnih vozila, uočeni okolni rizici..."></textarea></div>
         <div class="location-actions no-print"><button type="button" onclick="refreshLocationNarrative()">Osvježi opis</button></div>
       </div>
     </div>
@@ -1154,7 +1127,7 @@ textarea{line-height:1.5}
 
       <div class="hazard-card">
         <div class="hazard-card-head">
-          <div><span class="badge">POTRES</span><h3>Seizmički hazard</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda sa označenom lokacijom objekta</div></div>
+          <div><span class="badge">POTRES</span><h3>Seizmički hazard</h3><div class="small">Prognostička karta Federalnog hidrometeorološkog zavoda sa jasno označenom lokacijom objekta</div></div>
           <span id="quakeBadge" class="hazard-badge neutral">Stručna klasifikacija</span>
         </div>
         <div class="seismic-map-wrap">
@@ -2544,10 +2517,17 @@ toggleModules();analyze();
  function badge(id,label,cls){const b=document.getElementById(id);if(b){b.textContent=label;b.className='hazard-badge '+cls}}
 
  window.refreshLocationNarrative=()=>{
-  const a=v('locAddress'),sur=v('locSurrounding'),ac=v('locAccess'),te=v('locTerrain'),wa=v('locWater'),ne=v('locNeighbors'),no=v('locFieldNotes'),fd=v('locFireDistance');
-  let micro=`Predmetni objekt nalazi se na adresi ${a||'navedenoj u elaboratu'}.`; if(sur)micro+=` Neposredno okruženje je ${sur.toLowerCase()}.`;if(te)micro+=` Konfiguraciju terena karakteriše ${te.toLowerCase()}.`;if(ac)micro+=` Pristup interventnim vozilima ocijenjen je kao ${ac.toLowerCase()}.`;if(fd)micro+=` Unesena udaljenost relevantne vatrogasne jedinice iznosi približno ${fd} km.`;sv('locMicroText',micro);
-  let ext='';if(ne)ext+=`U neposrednom ili širem okruženju evidentirano je: ${ne}. `;if(wa)ext+=`${wa}. `;if(no)ext+=no;sv('locExternalText',ext.trim());
- };
+  const a=v('locAddress'),ac=v('locAccess'),ne=v('locNeighbors'),no=v('locFieldNotes'),fd=v('locFireDistance'),wc=v('locNearestWatercourse');
+  let micro=`Predmetni objekt nalazi se na adresi ${a||'navedenoj u elaboratu'}.`;
+  if(ac) micro+=` Pristup interventnim vozilima ocijenjen je kao ${ac.toLowerCase()}.`;
+  if(fd) micro+=` Najbliža relevantna vatrogasna jedinica nalazi se na približno ${fd} km od lokacije objekta.`;
+  sv('locMicroText',micro);
+  let ext='';
+  if(ne) ext+=`U neposrednom ili širem okruženju evidentirano je: ${ne}. `;
+  if(wc) ext+=`Najbliži evidentirani vodotok je ${wc}. `;
+  if(no) ext+=no;
+  sv('locExternalText',ext.trim());
+};
  window.refreshQuakeNarrative=()=>{
   const c=v('locQuakeClass'),i=v('locQuakeIntensity'),lab=({low:'niska',moderate:'umjerena',elevated:'povećana',high:'visoka'})[c]||'nije klasificirana';
   badge('quakeBadge',c?lab[0].toUpperCase()+lab.slice(1)+' izloženost':'Stručna klasifikacija',c==='low'?'low':c==='moderate'?'medium':(c==='elevated'||c==='high')?'high':'neutral');
@@ -2613,17 +2593,14 @@ toggleModules();analyze();
  }
 
  window.refreshLocationNarrative=function(){
-   const a=v('locAddress'),sur=v('locSurrounding'),ac=v('locAccess'),te=v('locTerrain'),wa=v('locWater'),ne=v('locNeighbors'),no=v('locFieldNotes'),fd=v('locFireDistance');
+   const a=v('locAddress'),ac=v('locAccess'),ne=v('locNeighbors'),no=v('locFieldNotes'),fd=v('locFireDistance'),wc=v('locNearestWatercourse');
    let micro=`Predmetni objekt nalazi se na adresi ${a||'navedenoj u elaboratu'}.`;
-   if(sur) micro+=` Neposredno okruženje je ${sur.toLowerCase()}.`;
-   if(te) micro+=` Konfiguraciju terena karakteriše ${te.toLowerCase()}.`;
    if(ac) micro+=` Pristup interventnim vozilima ocijenjen je kao ${ac.toLowerCase()}.`;
-   if(fd) micro+=` Udaljenost relevantne vatrogasne jedinice iznosi približno ${fd} km prema unesenom podatku.`;
+   if(fd) micro+=` Najbliža relevantna vatrogasna jedinica nalazi se na približno ${fd} km od lokacije objekta.`;
    sv('locMicroText',micro);
-
    let ext='';
    if(ne) ext+=`U neposrednom ili širem okruženju evidentirano je: ${ne}. `;
-   if(wa) ext+=`${wa}. `;
+   if(wc) ext+=`Najbliži evidentirani vodotok je ${wc}. `;
    if(no) ext+=no;
    sv('locExternalText',ext.trim());
  };
@@ -2884,23 +2861,22 @@ const data=await overpassNearby(lat,lon);
   // precise seismic map calibration using image geographic frame estimated from map panel:
   // The national map image includes margins; point is placed in calibrated map rectangle.
   function showPreciseQuakeMarker(lat,lon){
-    const geo={minLon:15.70,maxLon:19.65,minLat:42.50,maxLat:45.35};
-    const frame={left:5.5,right:95.0,top:6.5,bottom:94.0}; // percent of image canvas
+    const geo={minLon:15.74,maxLon:19.68,minLat:42.52,maxLat:45.30};
+    const frame={left:6.0,right:94.0,top:7.0,bottom:93.0};
     const xn=(lon-geo.minLon)/(geo.maxLon-geo.minLon);
     const yn=(geo.maxLat-lat)/(geo.maxLat-geo.minLat);
     const x=frame.left+Math.max(0,Math.min(1,xn))*(frame.right-frame.left);
     const y=frame.top+Math.max(0,Math.min(1,yn))*(frame.bottom-frame.top);
-
     ['quakePointMarker','reportQuakePoint'].forEach(id=>{
       const m=document.getElementById(id);
       if(!m) return;
       m.style.left=x+'%';
       m.style.top=y+'%';
+      m.style.display='block';
       m.classList.remove('hidden');
     });
-
     const lab=document.getElementById('quakeMarkerLabel');
-    if(lab) lab.textContent=`Objekt ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    if(lab){lab.textContent=`Objekt ${lat.toFixed(5)}, ${lon.toFixed(5)}`;lab.style.display='block';}
   }
 
   // Wrap existing location generator so environment and precise markers run automatically.
@@ -2930,7 +2906,7 @@ const data=await overpassNearby(lat,lon);
 
 
 <script>
-/* ===== v24.5 Google Maps Platform via Cloudflare Worker ===== */
+/* ===== v24.6 Google Maps Platform via Cloudflare Worker ===== */
 (function(){
   const V=id=>(document.getElementById(id)?.value||'').trim();
   const S=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??''};
