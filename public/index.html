@@ -509,7 +509,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.location-facts,.hazard-facts{grid-template-columns:1fr}.location-actions button{width:100%}}
 
 
-/* v24.8 - poseban tab Lokacija i prirodne opasnosti */
+/* v24.9 - poseban tab Lokacija i prirodne opasnosti */
 .location-page{border-top:4px solid #1f6f9e}
 .location-page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}
 .location-head-badge{background:#123b5d;color:white;border-radius:10px;padding:10px 14px;font-weight:800;font-size:11px;letter-spacing:.06em}
@@ -562,7 +562,7 @@ textarea{line-height:1.5}
 @media(max-width:600px){.auto-env-grid{grid-template-columns:1fr}}
 
 
-/* ===== v24.8 prikaz opasnosti od poplave ===== */
+/* ===== v24.9 prikaz opasnosti od poplave ===== */
 .nearest-hazard-wrap{
   display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;
 }
@@ -588,6 +588,18 @@ textarea{line-height:1.5}
 .seismic-object-marker .dot{width:22px;height:22px;border-radius:50%;background:#ff1f1f;border:4px solid #fff;box-shadow:0 0 0 4px rgba(255,31,31,.55),0 0 0 10px rgba(255,31,31,.20),0 3px 12px rgba(0,0,0,.45)}
 .seismic-object-marker .lbl{position:absolute;left:50%;top:30px;transform:translateX(-50%);background:#15384f;color:#fff;padding:4px 7px;border-radius:5px;font-size:10px;font-weight:800;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.28)}
 .report-seismic-wrap .seismic-object-marker .lbl{font-size:8px;top:26px}
+
+
+.secondary-source-block{margin-top:14px;padding:12px;border:1px solid #d7e3eb;border-radius:10px;background:#f8fbfd}
+.secondary-source-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.secondary-source-head h4{margin:3px 0 4px;color:#173d5c;font-size:13px}
+.source-label{font-size:8px;font-weight:900;letter-spacing:.08em;color:#52738a}
+.dras-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.dras-scenario{border:1px solid #dce6ed;border-radius:8px;background:#fff;padding:8px}
+.dras-scenario strong{display:block;font-size:10px;color:#24465f}.dras-scenario span{font-size:9px;color:#72828e}
+.source-comparison{margin-top:10px;padding:9px 10px;border-left:4px solid #6d99b5;background:#eef6fa;border-radius:0 7px 7px 0;font-size:10px;line-height:1.45;color:#405e70}
+.source-overview-card{margin-top:14px}.source-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.source-grid>div{border:1px solid #dbe5ec;border-radius:8px;background:#fff;padding:9px}.source-grid span{display:block;font-size:8px;color:#718291;text-transform:uppercase;letter-spacing:.05em}.source-grid strong{font-size:10px;color:#24465f}
+@media(max-width:700px){.dras-scenarios,.source-grid{grid-template-columns:1fr}.secondary-source-head{display:block}.secondary-source-head button{margin-top:8px}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1128,6 +1140,45 @@ textarea{line-height:1.5}
           <div><span>Povratni period</span><strong id="floodRecurrence">Čeka provjeru</strong></div>
           <div><span>Izvor</span><strong>ISV / voda.ba</strong></div>
         </div>
+        <div class="secondary-source-block">
+          <div class="secondary-source-head">
+            <div>
+              <span class="source-label">DOPUNSKI IZVOR</span>
+              <h4>DRAS — Sistem za analizu rizika od katastrofa</h4>
+              <div class="small">UNDP / DRAS javna karta opasnosti. Koristi se kao dopunska provjera uz primarni GIS izvor.</div>
+            </div>
+            <button type="button" class="btn-light no-print" onclick="openDRASMap()">Otvori DRAS kartu</button>
+          </div>
+          <div class="dras-scenarios">
+            <div class="dras-scenario"><strong>1 u 20 godina</strong><span>5% godišnje vjerovatnoće</span></div>
+            <div class="dras-scenario"><strong>1 u 100 godina</strong><span>1% godišnje vjerovatnoće</span></div>
+            <div class="dras-scenario"><strong>1 u 500 godina</strong><span>0,2% godišnje vjerovatnoće</span></div>
+          </div>
+          <div class="grid">
+            <div>
+              <label>DRAS — najnepovoljnija evidentirana klasa</label>
+              <select id="drasFloodClass" data-save onchange="refreshDRASComparison()">
+                <option value="">Nije provjereno</option>
+                <option value="none">Bez opasnosti</option>
+                <option value="minor">Neznatna opasnost</option>
+                <option value="few">Opasno za nekolicinu</option>
+                <option value="majority">Opasno za većinu</option>
+                <option value="all">Opasno za sve</option>
+              </select>
+            </div>
+            <div>
+              <label>Scenario na kojem je klasa uočena</label>
+              <select id="drasFloodScenario" data-save onchange="refreshDRASComparison()">
+                <option value="">Odaberi...</option>
+                <option value="20">1 u 20 godina</option>
+                <option value="100">1 u 100 godina</option>
+                <option value="500">1 u 500 godina</option>
+              </select>
+            </div>
+          </div>
+          <div id="drasFloodSummary" class="source-comparison">DRAS još nije provjeren za ovu lokaciju.</div>
+        </div>
+
         <label>Tekst za elaborat — poplava</label>
         <textarea id="locFloodText" data-save class="location-text"></textarea>
       </div>
@@ -1154,9 +1205,51 @@ textarea{line-height:1.5}
           </div>
           <div><label>Procijenjeni intenzitet / zona</label><input id="locQuakeIntensity" data-save placeholder="npr. VII MCS"></div>
         </div>
+        <div class="secondary-source-block">
+          <div class="secondary-source-head">
+            <div>
+              <span class="source-label">DOPUNSKI IZVOR</span>
+              <h4>DRAS — seizmička opasnost</h4>
+              <div class="small">DRAS prikazuje očekivani maksimalni intenzitet po skali MSK-64 za povratni period od 500 godina.</div>
+            </div>
+            <button type="button" class="btn-light no-print" onclick="openDRASMap()">Otvori DRAS kartu</button>
+          </div>
+          <div class="grid">
+            <div>
+              <label>DRAS — intenzitet prema MSK-64</label>
+              <select id="drasQuakeIntensity" data-save onchange="refreshDRASComparison()">
+                <option value="">Nije provjereno</option>
+                <option value="I">I — Neprimjetan</option><option value="II">II — Veoma lagan</option>
+                <option value="III">III — Lagan</option><option value="IV">IV — Umjereno jak</option>
+                <option value="V">V — Prilično jak</option><option value="VI">VI — Jak</option>
+                <option value="VII">VII — Veoma jak</option><option value="VIII">VIII — Razarajući</option>
+                <option value="IX">IX — Pustošeći</option><option value="X">X — Uništavajući</option>
+                <option value="XI">XI — Katastrofa</option><option value="XII">XII — Velika katastrofa</option>
+              </select>
+            </div>
+            <div>
+              <label>Napomena o DRAS provjeri</label>
+              <input id="drasQuakeNote" data-save placeholder="npr. lokacija između zona VII i VIII" oninput="refreshDRASComparison()">
+            </div>
+          </div>
+          <div id="drasQuakeSummary" class="source-comparison">DRAS još nije provjeren za ovu lokaciju.</div>
+        </div>
+
         <label>Tekst za elaborat — potres</label>
         <textarea id="locQuakeText" data-save class="location-text"></textarea>
       </div>
+    </div>
+
+    <div class="location-card source-overview-card">
+      <span class="badge">IZVORI PODATAKA</span>
+      <h3>Usklađenost podataka o prirodnim opasnostima</h3>
+      <div class="source-grid">
+        <div><span>Poplava — primarni izvor</span><strong>ISV / Agencija za vodno područje rijeke Save</strong></div>
+        <div><span>Poplava — dopunski izvor</span><strong>DRAS / UNDP</strong></div>
+        <div><span>Potres — primarni izvor</span><strong>Federalni hidrometeorološki zavod</strong></div>
+        <div><span>Potres — dopunski izvor</span><strong>DRAS / UNDP</strong></div>
+      </div>
+      <div id="drasOverallSummary" class="source-comparison">Dopunska DRAS provjera još nije završena.</div>
     </div>
 
     <div class="location-note"><b>Napomena:</b> automatski GIS i kartografski podaci služe kao pomoć pri izradi elaborata. Konačni tekst i klasifikaciju treba potvrditi stručnim pregledom dostupnih podataka i stanja na lokaciji.</div>
@@ -3141,6 +3234,32 @@ window.addEventListener('load',()=>{
   const lat=Number(document.getElementById('locLat')?.value),lon=Number(document.getElementById('locLon')?.value);
   if(window.updateSeismicObjectMarker && lat && lon) window.updateSeismicObjectMarker(lat,lon);
 });
+</script>
+
+
+<script>
+(function(){
+  const V=id=>(document.getElementById(id)?.value||'').trim();
+  const T=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};
+  window.openDRASMap=function(){
+    window.open('https://drasinfo.org/public','_blank','noopener');
+  };
+  window.refreshDRASComparison=function(){
+    const fc=V('drasFloodClass'),fs=V('drasFloodScenario'),qi=V('drasQuakeIntensity'),qn=V('drasQuakeNote');
+    const fl={none:'bez opasnosti',minor:'neznatna opasnost',few:'opasno za nekolicinu',majority:'opasno za većinu',all:'opasno za sve'};
+    if(fc){
+      const st=fs?` za scenario 1 u ${fs} godina`:'';
+      T('drasFloodSummary',`DRAS dopunska provjera: lokacija je označena klasom „${fl[fc]}“${st}. Ovaj nalaz treba tumačiti zajedno sa primarnim ISV/GIS podatkom i terenskim stanjem.`);
+    }else T('drasFloodSummary','DRAS još nije provjeren za ovu lokaciju.');
+    if(qi){
+      T('drasQuakeSummary',`DRAS dopunska provjera: očekivani maksimalni intenzitet označen je kao ${qi} po skali MSK-64 za povratni period od 500 godina${qn?`. Napomena: ${qn}`:''}.`);
+    }else T('drasQuakeSummary','DRAS još nije provjeren za ovu lokaciju.');
+    if(fc&&qi) T('drasOverallSummary','Primarni i dopunski izvori su evidentirani. Konačni zaključak treba zasnivati na konzervativnijem nalazu kada se izvori razlikuju, uz jasno navođenje izvora i stručnu provjeru procjenitelja.');
+    else if(fc||qi) T('drasOverallSummary','DRAS provjera je djelimično završena. Za potpunu usporedbu potrebno je provjeriti i poplavu i potres.');
+    else T('drasOverallSummary','Dopunska DRAS provjera još nije završena.');
+  };
+  window.addEventListener('load',()=>{if(window.refreshDRASComparison)window.refreshDRASComparison()});
+})();
 </script>
 
 </body>
